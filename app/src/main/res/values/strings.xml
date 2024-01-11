@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SpCount</string>
+    <string name="Name_import">Import</string>
+    <string name="Name_export">Export</string>
+</resources>
