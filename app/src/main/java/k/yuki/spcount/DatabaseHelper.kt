@@ -141,7 +141,7 @@ class DatabaseHelper internal constructor(context: Context?) :
         return retRecord
     }
 
-    fun selectContentsLike(contents: String): Array<String> {
+    internal fun selectContentsLike(contents: String): Array<String> {
         val db = this.readableDatabase
         var setList = mutableListOf<String>()
         val sql = " select DISTINCT contents " +
@@ -186,13 +186,40 @@ class DatabaseHelper internal constructor(context: Context?) :
                 // <- 最初はテーブルの0行目に位置しているため、
                 //    while構文を用いて最初に1行目に移る処理を行う
                 while (cursor.moveToNext()) {
-                    // 最初の行のみ取得
                     val retRecord = MainActivity.Record(
                         id = cursor.getInt(0),
                         ymd = cursor.getInt(1),
                         name = cursor.getString(2),
                         contents = cursor.getString(3),
                         remarks = cursor.getString(4)
+                    )
+                    setList.add(retRecord)
+                }
+            }
+            cursor.close()
+        } catch(exception: Exception) {
+            Log.e("selectDataAll", exception.toString())
+        }
+        return setList.toTypedArray()
+    }
+
+    internal fun selectAggData(pYear: Int): Array<MainActivity.AggRecord>
+    {
+        val db = this.readableDatabase
+        var setList = mutableListOf<MainActivity.AggRecord>()
+        val sql = " select * " +
+                " from SpCount " +
+                " order by _id "
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                // ループによるデータ取得
+                // Cursor.moveToNext(): 次の行に移動
+                // -> 次の行が存在する場合はtrue, 存在しない場合はfalseを返す
+                // <- 最初はテーブルの0行目に位置しているため、
+                //    while構文を用いて最初に1行目に移る処理を行う
+                while (cursor.moveToNext()) {
+                    val retRecord = MainActivity.AggRecord(
                     )
                     setList.add(retRecord)
                 }
