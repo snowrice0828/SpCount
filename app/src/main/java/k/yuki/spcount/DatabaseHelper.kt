@@ -275,4 +275,5 @@ class DatabaseHelper internal constructor(context: Context?) :
 
         return true
     }
+
 }

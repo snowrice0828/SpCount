@@ -61,7 +61,7 @@
         android:layout_width="240dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="60dp"
         android:layout_marginBottom="341dp"
         android:hint="name"
         android:inputType="text"
@@ -69,16 +69,15 @@
         android:maxLines="1"
         android:minLines="1"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/Contents" />
 
     <AutoCompleteTextView
         android:id="@+id/Contents"
         android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="70dp"
         android:layout_marginBottom="341dp"
         android:hint="contents"
         android:inputType="text"
@@ -88,14 +87,14 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/Year"
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/Remarks"
         android:layout_width="350dp"
         android:layout_height="100dp"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="60dp"
         android:background="@drawable/border"
         android:gravity="top|left"
@@ -105,7 +104,7 @@
         android:maxLength="512"
         android:maxLines="20"
         android:minLines="1"
-        android:textSize="14sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/textView1" />
 

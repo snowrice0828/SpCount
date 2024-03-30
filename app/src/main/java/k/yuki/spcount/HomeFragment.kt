@@ -26,10 +26,6 @@ class HomeFragment : Fragment(){
     public var pMonth: Int = 0
     public var pDay: Int = 0
     public var pName: String = ""
-    internal enum class Mode {
-        IMPORT, EXPORT
-    }
-    var editText: EditText? = null
     private lateinit var helper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {

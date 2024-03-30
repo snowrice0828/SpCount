@@ -6,4 +6,7 @@
     <item android:id="@+id/action_calender"
         android:title="カレンダー"
         android:icon="@drawable/baseline_calendar_month_24" />
+    <item android:id="@+id/action_file"
+        android:title="ファイル"
+        android:icon="@drawable/baseline_insert_drive_file_24" />
 </menu>
