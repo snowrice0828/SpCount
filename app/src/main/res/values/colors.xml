@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="calendar_bg">#3A284C</color>
+    <color name="calendar_bg_light">#433254</color>
+    <color name="calendar_bg_secondary">#51356E</color>
+    <color name="calendar_white_light">#4DFFFFFF</color>
+    <color name="calendar_white">#D9FFFFFF</color>
 </resources>
