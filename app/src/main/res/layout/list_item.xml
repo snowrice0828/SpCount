@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/DataId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/user_contents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="アイドルマスターミリオンライブ！"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/contents_coron"
+        app:layout_constraintStart_toEndOf="@+id/contents_coron" />
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="エミリー・スチュアート"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/name_coron"
+        app:layout_constraintStart_toEndOf="@+id/name_coron" />
+
+    <TextView
+        android:id="@+id/user_remarks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="ギャルもの"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/remarks_coron"
+        app:layout_constraintStart_toEndOf="@+id/remarks_coron" />
+
+    <TextView
+        android:id="@+id/contents_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="contents"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contents_label" />
+
+    <TextView
+        android:id="@+id/remarks_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="remarks"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name_label" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.14841849" />
+
+    <TextView
+        android:id="@+id/contents_coron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="："
+        app:layout_constraintBaseline_toBaselineOf="@+id/contents_label"
+        app:layout_constraintStart_toEndOf="@+id/guideline3"/>
+
+    <TextView
+        android:id="@+id/name_coron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="："
+        app:layout_constraintBaseline_toBaselineOf="@+id/name_label"
+        app:layout_constraintStart_toEndOf="@+id/guideline3"/>
+
+    <TextView
+        android:id="@+id/remarks_coron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="："
+        app:layout_constraintBaseline_toBaselineOf="@+id/remarks_label"
+        app:layout_constraintStart_toEndOf="@+id/guideline3"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
