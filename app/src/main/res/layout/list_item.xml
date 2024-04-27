@@ -8,7 +8,7 @@
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/DataId"
+        android:id="@+id/item_ID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="100"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/user_contents"
+        android:id="@+id/item_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
@@ -27,7 +27,7 @@
         app:layout_constraintStart_toEndOf="@+id/contents_coron" />
 
     <TextView
-        android:id="@+id/user_name"
+        android:id="@+id/item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
@@ -37,7 +37,7 @@
         app:layout_constraintStart_toEndOf="@+id/name_coron" />
 
     <TextView
-        android:id="@+id/user_remarks"
+        android:id="@+id/item_remarks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"

@@ -11,7 +11,10 @@ class RecyclerAdapter(val list: Array<MainActivity.Record>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: ViewHolderList, position: Int) {
-        holder.spList.text = (list[position]).id.toString()
+        holder.ItemId.text = (list[position]).id.toString()
+        holder.ItemName.text = (list[position]).name.toString()
+        holder.ItemContents.text = (list[position]).contents.toString()
+        holder.ItemRemarks.text = (list[position]).remarks.toString()
     }
 
     override fun getItemCount(): Int = list.size
