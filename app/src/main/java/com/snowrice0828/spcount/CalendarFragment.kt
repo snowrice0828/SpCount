@@ -1,6 +1,6 @@
-package k.yuki.spcount
+package com.snowrice0828.spcount
+
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,6 +76,7 @@ class CalendarFragment : Fragment() {
     fun clickItem(view: View, ItemId: String)
     {
         Toast.makeText(requireActivity(), "${ItemId}がタップされましたA", Toast.LENGTH_LONG).show()
+
     }
 
 }

@@ -1,20 +1,10 @@
-package k.yuki.spcount
+package com.snowrice0828.spcount
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Toast
-import androidx.core.view.size
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStream
-import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() , BottomNavigationView.OnNavigationItemSelectedListener{
     private lateinit var helper: DatabaseHelper

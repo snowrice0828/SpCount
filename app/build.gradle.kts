@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "k.yuki.spcount"
+    namespace = "com.snowrice0828.spcount"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "k.yuki.spcount"
+        applicationId = "com.snowrice0828.spcount"
         minSdk = 29
         targetSdk = 33
         versionCode = 1
@@ -50,5 +50,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.0")
-    implementation ("com.kizitonwose.calendar:view:2.0.0")
+    //implementation ("com.kizitonwose.calendar:view:2.0.0")
 }

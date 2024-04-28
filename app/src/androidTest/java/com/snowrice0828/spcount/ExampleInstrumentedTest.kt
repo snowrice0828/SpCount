@@ -1,4 +1,4 @@
-package k.yuki.spcount
+package com.snowrice0828.spcount
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

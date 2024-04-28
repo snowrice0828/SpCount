@@ -1,4 +1,4 @@
-package k.yuki.spcount
+package com.snowrice0828.spcount
 
 import android.text.Editable
 import android.text.TextWatcher
