@@ -36,6 +36,7 @@ class DatabaseHelper internal constructor(context: Context?) :
         onCreate(db)
     }
 
+    // データベース作成
     companion object {
         // データーベースのバージョン
         private const val DATABASE_VERSION = 3
@@ -54,7 +55,8 @@ class DatabaseHelper internal constructor(context: Context?) :
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME
     }
 
-    internal fun selectDataLike(name: String, year: Int): Array<String> {
+    // 部分一致人物名取得
+    internal fun selectDataLikeName(name: String, year: Int): Array<String> {
         val db = this.readableDatabase
         var setList = mutableListOf<String>()
         val sql = " select distinct name " +
@@ -79,6 +81,36 @@ class DatabaseHelper internal constructor(context: Context?) :
             cursor.close()
         } catch (exception: Exception) {
             Log.e("selectDataLike", exception.toString())
+        }
+
+        return setList.toTypedArray()
+    }
+
+    // 部分一致コンテンツ名取得
+    internal fun selectDataLikeContents(contents: String): Array<String> {
+        val db = this.readableDatabase
+        var setList = mutableListOf<String>()
+        val sql = " select DISTINCT contents " +
+                " from SpCount " +
+                " where contents LIKE '%" + contents.replace("'", "''") + "%'" +     // SQLインジェクションされそう。とりあえずこれで。どうせ俺しか使わんし
+                " order by _id "
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                // ループによるデータ取得
+                // Cursor.moveToNext(): 次の行に移動
+                // -> 次の行が存在する場合はtrue, 存在しない場合はfalseを返す
+                // <- 最初はテーブルの0行目に位置しているため、
+                //    while構文を用いて最初に1行目に移る処理を行う
+                while (cursor.moveToNext()) {
+                    val idxDescription = cursor.getColumnIndex("contents")
+                    setList.add(cursor.getString(idxDescription))
+                }
+            }
+
+            cursor.close()
+        } catch (exception: Exception) {
+            Log.e("selectContentsLike", exception.toString())
         }
 
         return setList.toTypedArray()
@@ -141,13 +173,15 @@ class DatabaseHelper internal constructor(context: Context?) :
         return retRecord
     }
 
-    internal fun selectContentsLike(contents: String): Array<String> {
+    // カレンダー表示用 日付単位でデータ取得
+    internal fun selectData(ymd: Int): Array<MainActivity.Record> {
+        var setList = mutableListOf<MainActivity.Record>()
         val db = this.readableDatabase
-        var setList = mutableListOf<String>()
-        val sql = " select DISTINCT contents " +
+        val retRecord = MainActivity.Record()
+        val sql = " select * " +
                 " from SpCount " +
-                " where contents LIKE '%" + contents.replace("'", "''") + "%'" +     // SQLインジェクションされそう。とりあえずこれで。どうせ俺しか使わんし
-                " order by _id "
+                " where ymd = " + ymd.toString()
+        " order by _id "
         try {
             val cursor = db.rawQuery(sql, null)
             cursor.use {
@@ -157,19 +191,24 @@ class DatabaseHelper internal constructor(context: Context?) :
                 // <- 最初はテーブルの0行目に位置しているため、
                 //    while構文を用いて最初に1行目に移る処理を行う
                 while (cursor.moveToNext()) {
-                    val idxDescription = cursor.getColumnIndex("contents")
-                    setList.add(cursor.getString(idxDescription))
+                    val retRecord = MainActivity.Record(
+                        id = cursor.getInt(0),
+                        ymd = cursor.getInt(1),
+                        name = cursor.getString(2),
+                        contents = cursor.getString(3),
+                        remarks = cursor.getString(4)
+                    )
+                    setList.add(retRecord)
                 }
             }
-
             cursor.close()
-        } catch (exception: Exception) {
-            Log.e("selectContentsLike", exception.toString())
+        } catch(exception: Exception) {
+            Log.e("selectDataAll", exception.toString())
         }
-
         return setList.toTypedArray()
     }
 
+    // 全データ取得
     internal fun selectDataAll(): Array<MainActivity.Record> {
 
         val db = this.readableDatabase
@@ -203,6 +242,7 @@ class DatabaseHelper internal constructor(context: Context?) :
         return setList.toTypedArray()
     }
 
+    // 集計後データ取得
     internal fun selectAggData(pYear: Int): Array<MainActivity.AggRecord>
     {
         val db = this.readableDatabase
@@ -231,6 +271,7 @@ class DatabaseHelper internal constructor(context: Context?) :
         return setList.toTypedArray()
     }
 
+    // データ追加
     internal fun insertData(contents: String, name: String, ymd: Int, remarks: String): Boolean{
         try {
             val database = this.writableDatabase
@@ -249,30 +290,25 @@ class DatabaseHelper internal constructor(context: Context?) :
         return true
     }
 
+    /// データ追加
     internal fun insertData(rec: MainActivity.Record): Boolean{
-        try {
-            val database = this.writableDatabase
-            val values = ContentValues()
-            values.put("name", rec.name)
-            values.put("contents", rec.contents)
-            values.put("ymd", rec.ymd)
-            values.put("remarks", rec.remarks)
-            database.insert("SpCount", null, values)
-        }catch(exception: Exception) {
-            Log.e("insertData", exception.toString())
-            return false
-        }
-
-        return true
+        return insertData(rec.contents, rec.name, rec.ymd, rec.remarks)
     }
 
-    internal fun updateData(whereId: String, ymd: Int, name: String,  newCount: Int): Boolean{
+    // データ更新
+    internal fun updateData(whereId: Int, ymd: Int, contents: String, name: String, remarks: String ): Boolean{
+
         try {
             val database = this.writableDatabase
-
             val values = ContentValues()
+
+            values.put("name", name)
+            values.put("contents", contents)
+            values.put("ymd", ymd)
+            values.put("remarks", remarks)
+
             val whereClauses = "_id = ?"
-            val whereArgs = arrayOf(whereId)
+            val whereArgs = arrayOf(whereId.toString())
             database.update("SpCount", values, whereClauses, whereArgs)
         }catch(exception: Exception) {
             Log.e("updateData", exception.toString())
@@ -282,25 +318,9 @@ class DatabaseHelper internal constructor(context: Context?) :
         return true
     }
 
+    // データ更新
     internal fun updateData(rec: MainActivity.Record): Boolean{
-        try {
-            val database = this.writableDatabase
-            val values = ContentValues()
-
-            values.put("name", rec.name)
-            values.put("contents", rec.contents)
-            values.put("ymd", rec.ymd)
-            values.put("remarks", rec.remarks)
-
-            val whereClauses = "_id = ? and year = ?"
-            val whereArgs = arrayOf(rec.id.toString(), rec.ymd.toString())
-            database.update("SpCount", values, whereClauses, whereArgs)
-        }catch(exception: Exception) {
-            Log.e("updateData", exception.toString())
-            return false
-        }
-
-        return true
+        return updateData(rec.id, rec.ymd, rec.contents, rec.name, rec.remarks)
     }
 
 }

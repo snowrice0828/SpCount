@@ -105,7 +105,7 @@ class HomeFragment : Fragment(){
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                var cmp = helper.selectContentsLike(s.toString())  // 補完用のデータを取得
+                var cmp = helper.selectDataLikeContents(s.toString())  // 補完用のデータを取得
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, cmp)
                 val autoCompleteTextView = view.findViewById<AutoCompleteTextView>(R.id.Contents)
                 if (autoCompleteTextView != null) {
@@ -123,7 +123,7 @@ class HomeFragment : Fragment(){
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 pName = s.toString()
-                var cmp = helper.selectDataLike(pName, pYear)  // 補完用のデータを取得
+                var cmp = helper.selectDataLikeName(pName, pYear)  // 補完用のデータを取得
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, cmp)
                 val autoCompleteTextView = view.findViewById<AutoCompleteTextView>(R.id.Name)
                 if (autoCompleteTextView != null) {
@@ -222,6 +222,7 @@ class HomeFragment : Fragment(){
         return true
     }
 
+    // 画面カウンタセット処理
     private fun setCounter(view:View, name:String, year:Int)
     {
         var rec = helper.selectData(name, year)  // 本データを取得
