@@ -22,14 +22,25 @@ import java.util.Locale
 
 
 class HomeFragment : Fragment(){
-    public var pYear: Int = 0
-    public var pMonth: Int = 0
-    public var pDay: Int = 0
-    public var pName: String = ""
+    private var pYear: Int = 0
+    private var pMonth: Int = 0
+    private var pDay: Int = 0
+    private var pName: String = ""
+    private var pContents: String = ""
     private lateinit var helper: DatabaseHelper
+    private var ItemId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var bundle = arguments
+        if(bundle != null)
+        {
+            ItemId = bundle.getInt("KEY_ID")
+        }
+        else
+        {
+            ItemId = -1
+        }
     }
 
     override fun onCreateView(
@@ -38,14 +49,38 @@ class HomeFragment : Fragment(){
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         helper = DatabaseHelper(view.context)
+
+        val buttonView = view.findViewById<Button>(R.id.button) as Button
+        val itemIdView = view.findViewById<TextView>(R.id.ItemId) as TextView
+
+        if(ItemId != -1)
+        {
+            itemIdView.text = ItemId.toString()
+            itemIdView.visibility = View.VISIBLE    // 可視化
+            buttonView.text = "更新"
+        }
+        else
+        {
+            itemIdView.text = ""
+            itemIdView.visibility = View.GONE    // 不可視化
+            buttonView.text = "保存"
+        }
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 初期値日付をセット
-        InitDate(view)
+        if(ItemId != -1)
+        {
+            setData(view, ItemId)
+        }
+        else
+        {
+            // 初期値日付をセット
+            InitDate(view)
+        }
 
         val year = view.findViewById<View>(R.id.Year) as EditText
         year.addTextChangedListener(object : TextWatcher {
@@ -56,7 +91,7 @@ class HomeFragment : Fragment(){
             override fun afterTextChanged(s: Editable) {
                 var y = if(s.toString() == "") 0 else s.toString().toInt()
                 pYear = y
-                setCounter(view, pName, pYear)             // データを取得集計して表示
+                setCounter(view, pName, pContents, pYear, pMonth)             // データを取得集計して表示
             }
         })
 
@@ -77,7 +112,7 @@ class HomeFragment : Fragment(){
                 }
                 pMonth = m
                 // 入力ミスで12月に強制変更されたとして、日付が未変更のまま不正になることはないので日部分は変更しない
-                setCounter(view, pName, pYear)             // データを取得集計して表示
+                setCounter(view, pName, pContents, pYear, pMonth)             // データを取得集計して表示
             }
         })
 
@@ -114,6 +149,8 @@ class HomeFragment : Fragment(){
                 }
             }
             override fun afterTextChanged(s: Editable) {
+                pContents = s.toString()
+                setCounter(view, pName, pContents, pYear, pMonth)             // データを取得集計して表示
             }
         })
 
@@ -133,7 +170,8 @@ class HomeFragment : Fragment(){
             }
             override fun afterTextChanged(s: Editable) {
                 pName = s.toString()
-                setCounter(view, pName, pYear)             // データを取得、集計して表示
+                setContentsName(view, pName)
+                setCounter(view, pName, pContents, pYear, pMonth)             // データを取得集計して表示
             }
         })
 
@@ -153,7 +191,7 @@ class HomeFragment : Fragment(){
         pDay = currentDay
 
         val m = view.findViewById<EditText>(R.id.Month)
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) +1 // 月は0始まりのため+1する
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1 // 月は0始まりのため+1する
         m.setText(currentMonth.toString())
         pMonth = currentMonth
 
@@ -165,6 +203,9 @@ class HomeFragment : Fragment(){
 
     fun buttonOnClick_Save(view: View){ // ①クリック時の処理を追加
         try {
+            var itemId = view.findViewById<TextView>(R.id.ItemId)
+            var id = itemId.text.toString().toInt()
+
             var y = view.findViewById<EditText>(R.id.Year)
             var year = y.text.toString().toInt()
 
@@ -183,23 +224,37 @@ class HomeFragment : Fragment(){
             var r = view.findViewById<EditText>(R.id.Remarks)
             var remarks = r.text.toString()
 
-            setCounter(view, name, year)             // データを取得、集計して表示
+            setCounter(view, name, contents, year, month)             // データを取得、集計して表示
+
+            var msg: String = "よろしいですか？"
+            if(id != -1)
+            {
+                msg = "ID:" + id.toString() + "を更新します。\nよろしいですか？"
+            }
 
             AlertDialog.Builder(requireContext())
                 .setTitle("確認")
-                .setMessage("よろしいですか。")
+                .setMessage(msg)
                 .setPositiveButton(
                     "OK"
                 ) { dialog, which ->
                     // カウンタ更新処理
-                    val ymd = (year.toString() + month.toString() + day.toString()).toInt()
-                    var ret = submit_inc(contents, name, ymd, remarks)
+                    val ymd = (year.toString() + month.toString().padStart(2, '0') + day.toString().padStart(2, '0').toString()).toInt()
+                    var ret :Boolean = true
+                    if(id != -1)
+                    {
+                        ret = submit_upd(id, contents, name, ymd, remarks)
+                    }
+                    else
+                    {
+                        ret = submit_inc(contents, name, ymd, remarks)
+                    }
                     if (ret) {
                         Toast.makeText(requireActivity(), "保存が完了しました。", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireActivity(), "エラーが発生しました。", Toast.LENGTH_LONG).show()
                     }
-                    setCounter(view, name, year)             // データを取得、集計して表示
+                    setCounter(view, name, contents, year, month)             // データを取得、集計して表示
                 }
                 .setNegativeButton(
                     "キャンセル"
@@ -212,33 +267,30 @@ class HomeFragment : Fragment(){
         }
     }
 
+    // データインサート処理
     private fun submit_inc(contents :String, name :String, ymd: Int, remarks: String): Boolean
     {
-        var ret = helper.insertData(contents, name, ymd, remarks)
-        if(ret == false)
-        {
-            return false
-        }
-        return true
+        return helper.insertData(contents, name, ymd, remarks)
+    }
+
+    // データアップデート処理
+    private fun submit_upd(id :Int, contents :String, name :String, ymd: Int, remarks: String): Boolean
+    {
+        return helper.updateData(id, ymd, contents, name, remarks)
     }
 
     // 画面カウンタセット処理
-    private fun setCounter(view:View, name:String, year:Int)
+    private fun setCounter(view:View, name:String, contents:String, year:Int, month:Int)
     {
-        var rec = helper.selectData(name, year)  // 本データを取得
-
-        Log.d("TAG", "setCounter: " + rec.name)
+        var ret = helper.selectCountData(name, contents, year, month)  // 本データを取得
 
         var yCount = 0
         var mCount = 0
 
-        // それぞれ画面に表示
-        if(rec.id != -1) {
-            var co = view.findViewById<TextView>(R.id.Contents)
-            co.setText(rec.contents)
+        if(ret.count() > 1) {
+            yCount = ret[0]
+            mCount = ret[1]
         }
-
-        // ここでRecからデータを取得
 
         var yc = view.findViewById<TextView>(R.id.yCount)
         yc.setText(yCount.toString())
@@ -247,6 +299,58 @@ class HomeFragment : Fragment(){
         ym.setText(mCount.toString())
     }
 
+    // コンテンツ名自動セット処理
+    private fun setContentsName(view:View, name:String)
+    {
+        var ret = helper.selectContents(name)  // 本データを取得
+
+        var contents = view.findViewById<EditText>(R.id.Contents) as EditText
+
+        if(ret != "")
+        {
+            contents.setText(ret)
+        }
+    }
+
+    // 修正処理用。IDデータを画面にセット
+    private fun setData(view:View, itemID:Int)
+    {
+        val Data = helper.selectDataId(itemID)
+
+        if(Data.id != -1)
+        {
+            var itemID = view.findViewById<TextView>(R.id.ItemId)
+            var year = view.findViewById<EditText>(R.id.Year) as EditText
+            var month = view.findViewById<EditText>(R.id.Month) as EditText
+            var day = view.findViewById<EditText>(R.id.Day) as EditText
+            var name = view.findViewById<EditText>(R.id.Name)
+            var contents = view.findViewById<EditText>(R.id.Contents)
+            var remarks = view.findViewById<EditText>(R.id.Remarks)
+
+            year.isEnabled = true
+            month.isEnabled = true
+            day.isEnabled = true
+
+            var y = Data.ymd / 10000
+            var m = (Data.ymd / 100) % 100
+            var d = Data.ymd % 100
+
+            Log.v("setData", "ここまできたよ" + y.toString() + "," + m.toString() + "," + d.toString())
+
+            // 取得データセット
+            itemID.setText(Data.id.toString())
+            year.setText(y.toString())
+            year.requestFocus()
+            month.setText(m.toString())
+            month.requestFocus()
+            day.setText(d.toString())
+            day.requestFocus()
+            day.setSelection(day.text.length)
+            name.setText(Data.name)
+            remarks.setText(Data.remarks)
+            contents.setText(Data.contents)
+        }
+    }
 
     /**
      * 日付の妥当性チェックを行います。

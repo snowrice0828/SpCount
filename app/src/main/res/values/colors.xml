@@ -3,6 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="buttun_purple">#800080</color>
+    <color name="buttun_yellow">#ffff00</color>
+
     <color name="calendar_bg">#3A284C</color>
     <color name="calendar_bg_light">#433254</color>
     <color name="calendar_bg_secondary">#51356E</color>

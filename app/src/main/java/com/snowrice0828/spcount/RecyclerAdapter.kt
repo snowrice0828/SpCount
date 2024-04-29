@@ -19,20 +19,19 @@ class RecyclerAdapter(val list: Array<MainActivity.Record>) : RecyclerView.Adapt
         holder.ItemId.text = (list[position]).id.toString()
         holder.ItemName.text = (list[position]).name.toString()
         holder.ItemContents.text = (list[position]).contents.toString()
-        holder.ItemRemarks.text = (list[position]).remarks.toString()
+        holder.ItemRemarks.text = (list[position]).remarks.toString().replace("\n", " ")
 
         // タップしたとき
         holder.itemView.setOnClickListener {
-            listener.onItemClickListener(it, position, (list[position]).id.toString())
+            listener.onItemClickListener(it, position, (list[position]).id)
         }
     }
 
     override fun getItemCount(): Int = list.size
 
-
     //インターフェースの作成
     interface OnItemClickListener{
-        fun onItemClickListener(view: View, position: Int, clickedText: String)
+        fun onItemClickListener(view: View, position: Int, clickedId: Int)
     }
 
     // リスナー

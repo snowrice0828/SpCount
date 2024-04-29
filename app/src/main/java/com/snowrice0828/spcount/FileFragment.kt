@@ -97,22 +97,10 @@ class FileFragment : Fragment(){
             remarks = csvRow[4]
         )
 
-        var ret = helper.selectData(rec.name, (rec.ymd / 10000))
-        if(ret.id == -1)
+        var ret = helper.insertData(rec)
+        if(ret == false)
         {
-            var ret = helper.insertData(rec)
-            if(ret == false)
-            {
-                return false
-            }
-        }
-        else
-        {
-            var ret = helper.updateData(rec)
-            if(ret == false)
-            {
-                return false
-            }
+            return false
         }
 
         return true
@@ -298,7 +286,7 @@ class FileFragment : Fragment(){
 
     fun exportStringAgg(): String {
         var getList = helper.selectAggData(pYear)
-        var retString :String = "id,ymd,name,contents,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec" + "\r\n"
+        var retString :String = "year,name,contents,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec" + "\r\n"
         for(i in 0 until getList.count())
         {
             val rec = getList[i]

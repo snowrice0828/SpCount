@@ -116,72 +116,89 @@ class DatabaseHelper internal constructor(context: Context?) :
         return setList.toTypedArray()
     }
 
-    internal fun selectData(name: String, year: Int): MainActivity.Record {
+    // コンテンツ名取得
+    internal fun selectContents(name: String): String {
         val db = this.readableDatabase
-        val retRecord = MainActivity.Record()
-        val sql = " select * " +
+        var retString: String = ""
+        val sql = " select DISTINCT contents, count(*) " +
                 " from SpCount " +
-                " where name = '" + name.replace("'","''") + "'" +      // SQLインジェクションされそう。とりあえずこれで。どうせ俺しか使わんし
-                " and (ymd / 10000) = " + year.toString()
-                " order by _id "
+                " where name = '" + name.replace("'", "''") + "'" +     // SQLインジェクションされそう。とりあえずこれで。どうせ俺しか使わんし
+                " group by contents "
         try {
             val cursor = db.rawQuery(sql, null)
             cursor.use {
                 if (cursor.count > 0) {
                     cursor.moveToFirst()
                     // 最初の行のみ取得
-                    retRecord.id = cursor.getInt(0)
-                    retRecord.ymd = cursor.getInt(1)
-                    retRecord.name = cursor.getString(2)
-                    retRecord.contents = cursor.getString(3)
-                    retRecord.remarks = cursor.getString(4)
+                    retString = cursor.getString(0)
                 }
             }
 
             cursor.close()
-        } catch(exception: Exception) {
-            Log.e("selectData", exception.toString())
+        } catch (exception: Exception) {
+            Log.e("selectContentsLike", exception.toString())
         }
 
-        if(retRecord.id == -1)      // 取得できなかった場合、名称と年違いのデータを取得するために再Select
-        {
-            val sql = " select * " +
-                    " from SpCount " +
-                    " where name = '" + name.replace("'","''") + "'" +      // SQLインジェクションされそう。とりあえずこれで。どうせ俺しか使わんし
-                    " order by _id, ymd DESC " +
-                    " LIMIT 1"
-            try {
-                val cursor = db.rawQuery(sql, null)
-                cursor.use {
-                    if (cursor.count > 0) {
-                        cursor.moveToFirst()
-                        // 最初の行のみ取得
-                        retRecord.id = cursor.getInt(0)
-                        retRecord.ymd = cursor.getInt(1)
-                        retRecord.name = cursor.getString(2)
-                        retRecord.contents = cursor.getString(3)
-                        retRecord.remarks = cursor.getString(4)
-                    }
+        return retString
+    }
+
+
+    internal fun selectCountData(name: String, contents: String, year: Int, month:Int): IntArray {
+        val db = this.readableDatabase
+        var retList: IntArray = intArrayOf(0,0)
+        var sql = " select count(*)" +
+                " from SpCount " +
+                " WHERE ymd / 10000 = " + year.toString() +
+                "   AND name = '" + name.replace("'", "''") + "'" +
+                "   AND contents = '" + contents.replace("'", "''") + "'" +
+                " group by name, contents"
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                if (cursor.count > 0) {
+                    cursor.moveToFirst()
+                    // 最初の行のみ取得
+                    retList[0] = cursor.getInt(0)
                 }
-
-                cursor.close()
-            } catch(exception: Exception) {
-                Log.e("selectData", exception.toString())
             }
+            cursor.close()
+        } catch(exception: Exception) {
+            Log.e("selectCountData1", exception.toString())
         }
 
-        return retRecord
+        sql = " select count(*)" +
+                " from SpCount " +
+                " WHERE ymd / 100 = " + (year * 100 + month).toString() +
+                "   AND name = '" + name.replace("'", "''") + "'" +
+                "   AND contents = '" + contents.replace("'", "''") + "'" +
+                " group by name, contents"
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                if (cursor.count > 0) {
+                    cursor.moveToFirst()
+                    // 最初の行のみ取得
+                    retList[1] = cursor.getInt(0)
+                }
+            }
+            cursor.close()
+        } catch(exception: Exception) {
+            Log.e("selectCountData2", exception.toString())
+        }
+
+        return retList
     }
 
     // カレンダー表示用 日付単位でデータ取得
-    internal fun selectData(ymd: Int): Array<MainActivity.Record> {
+    internal fun selectDataYmd(ymd: Int): Array<MainActivity.Record>
+    {
         var setList = mutableListOf<MainActivity.Record>()
         val db = this.readableDatabase
         val retRecord = MainActivity.Record()
         val sql = " select * " +
                 " from SpCount " +
-                " where ymd = " + ymd.toString()
-        " order by _id "
+                " where ymd = " + ymd.toString() +
+                " order by _id "
         try {
             val cursor = db.rawQuery(sql, null)
             cursor.use {
@@ -203,14 +220,53 @@ class DatabaseHelper internal constructor(context: Context?) :
             }
             cursor.close()
         } catch(exception: Exception) {
-            Log.e("selectDataAll", exception.toString())
+            Log.e("selectDataYmd", exception.toString())
         }
         return setList.toTypedArray()
     }
 
-    // 全データ取得
-    internal fun selectDataAll(): Array<MainActivity.Record> {
+    // カレンダー表示用 日付単位でデータ取得
+    internal fun selectDataId(Id: Int): MainActivity.Record {
+        var retRecord = MainActivity.Record()
+        val db = this.readableDatabase
+        val sql = " select _id " +
+                "         ,ymd" +
+                "         ,name" +
+                "         ,contents" +
+                "         ,remarks" +
+                " from SpCount " +
+                " where _id = " + Id.toString() +
+                " order by _id "
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                // ループによるデータ取得
+                // Cursor.moveToNext(): 次の行に移動
+                // -> 次の行が存在する場合はtrue, 存在しない場合はfalseを返す
+                // <- 最初はテーブルの0行目に位置しているため、
+                //    while構文を用いて最初に1行目に移る処理を行う
+                if (cursor.count > 0) {
+                    cursor.moveToFirst()
+                    // 最初の行のみ取得
+                    retRecord = MainActivity.Record(
+                        id = cursor.getInt(0),
+                        ymd = cursor.getInt(1),
+                        name = cursor.getString(2),
+                        contents = cursor.getString(3),
+                        remarks = cursor.getString(4)
+                    )
+                }
+            }
+            cursor.close()
+        } catch(exception: Exception) {
+            Log.e("selectDataId", exception.toString())
+        }
+        return retRecord
+    }
 
+    // 全データ取得
+    internal fun selectDataAll(): Array<MainActivity.Record>
+    {
         val db = this.readableDatabase
         var setList = mutableListOf<MainActivity.Record>()
         val sql = " select * " +
@@ -247,9 +303,59 @@ class DatabaseHelper internal constructor(context: Context?) :
     {
         val db = this.readableDatabase
         var setList = mutableListOf<MainActivity.AggRecord>()
-        val sql = " select * " +
-                " from SpCount " +
-                " order by _id "
+        val sql = " select (ymd / 10000)  AS year" +
+                " ,name, contents " +
+                "         ,sum(case when (ymd / 100) % 100 = 1" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as jan" +
+                "         ,sum(case when (ymd / 100) % 100 = 2" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as feb" +
+                "         ,sum(case when (ymd / 100) % 100 = 3" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as mar" +
+                "         ,sum(case when (ymd / 100) % 100 = 4" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as apr" +
+                "         ,sum(case when (ymd / 100) % 100 = 5" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as may" +
+                "         ,sum(case when (ymd / 100) % 100 = 6" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as jun" +
+                "         ,sum(case when (ymd / 100) % 100 = 7" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as jul" +
+                "         ,sum(case when (ymd / 100) % 100 = 8" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as aug" +
+                "         ,sum(case when (ymd / 100) % 100 = 9" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as sep" +
+                "         ,sum(case when (ymd / 100) % 100 = 10" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as oct" +
+                "         ,sum(case when (ymd / 100) % 100 = 11" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as nov" +
+                "         ,sum(case when (ymd / 100) % 100 = 12" +
+                "                  then 1" +
+                "                  else 0" +
+                "              end) as dec" +
+                    " from SpCount " +
+                    " WHERE ymd / 10000 = " + pYear.toString() +
+                    " group by year, name, contents"
         try {
             val cursor = db.rawQuery(sql, null)
             cursor.use {
@@ -260,19 +366,35 @@ class DatabaseHelper internal constructor(context: Context?) :
                 //    while構文を用いて最初に1行目に移る処理を行う
                 while (cursor.moveToNext()) {
                     val retRecord = MainActivity.AggRecord(
+                        year = cursor.getInt(0),
+                        name = cursor.getString(1),
+                        contents = cursor.getString(2),
+                        jan = cursor.getInt(3),
+                        feb = cursor.getInt(4),
+                        mar = cursor.getInt(5),
+                        apr = cursor.getInt(6),
+                        may = cursor.getInt(7),
+                        jun = cursor.getInt(8),
+                        jul = cursor.getInt(9),
+                        aug = cursor.getInt(10),
+                        sep = cursor.getInt(11),
+                        oct = cursor.getInt(12),
+                        nov = cursor.getInt(13),
+                        dec = cursor.getInt(14),
                     )
                     setList.add(retRecord)
                 }
             }
             cursor.close()
         } catch(exception: Exception) {
-            Log.e("selectDataAll", exception.toString())
+            Log.e("selectAggData", exception.toString())
         }
         return setList.toTypedArray()
     }
 
     // データ追加
-    internal fun insertData(contents: String, name: String, ymd: Int, remarks: String): Boolean{
+    internal fun insertData(contents: String, name: String, ymd: Int, remarks: String): Boolean
+    {
         try {
             val database = this.writableDatabase
             val values = ContentValues()
@@ -291,13 +413,14 @@ class DatabaseHelper internal constructor(context: Context?) :
     }
 
     /// データ追加
-    internal fun insertData(rec: MainActivity.Record): Boolean{
+    internal fun insertData(rec: MainActivity.Record): Boolean
+    {
         return insertData(rec.contents, rec.name, rec.ymd, rec.remarks)
     }
 
     // データ更新
-    internal fun updateData(whereId: Int, ymd: Int, contents: String, name: String, remarks: String ): Boolean{
-
+    internal fun updateData(whereId: Int, ymd: Int, contents: String, name: String, remarks: String ): Boolean
+    {
         try {
             val database = this.writableDatabase
             val values = ContentValues()

@@ -19,7 +19,7 @@ class CalendarFragment : Fragment() {
     private lateinit var helper: DatabaseHelper
 
     private var SelectDate :Int = 0
-
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,14 +56,14 @@ class CalendarFragment : Fragment() {
 
     fun setRecylerView()
     {
-        var getList = helper.selectData(SelectDate)
+        var getList = helper.selectDataYmd(SelectDate)
         val adapter: RecyclerAdapter = RecyclerAdapter(getList)
 
         //https://qiita.com/soutominamimura/items/47a48e4e6e1aff3d3396
         // インターフェースの実装
         adapter.setOnItemClickListener(object:RecyclerAdapter.OnItemClickListener{
-            override fun onItemClickListener(view: View, position: Int, clickedText: String) {
-                clickItem(view, clickedText)
+            override fun onItemClickListener(view: View, position: Int, clickedId: Int) {
+                clickItem(view, clickedId)
             }
         })
 
@@ -73,10 +73,22 @@ class CalendarFragment : Fragment() {
         recyclerView.addItemDecoration(dividerItemDecoration)
     }
 
-    fun clickItem(view: View, ItemId: String)
+    fun clickItem(view: View, ItemId: Int)
     {
-        Toast.makeText(requireActivity(), "${ItemId}がタップされましたA", Toast.LENGTH_LONG).show()
+        Toast.makeText(requireActivity(), "ID:${ItemId}", Toast.LENGTH_LONG).show()
 
+        // Bundle（オブジェクトの入れ物）のインスタンスを作成する
+        val bundle = Bundle()
+        // Key/Pairの形で値をセットする
+        bundle.putInt("KEY_ID", ItemId)
+        // Fragmentに値をセットする
+        val fragment = HomeFragment()
+        fragment.setArguments(bundle)
+        // 遷移処理
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .setReorderingAllowed(true)
+            .commit()
     }
 
 }
