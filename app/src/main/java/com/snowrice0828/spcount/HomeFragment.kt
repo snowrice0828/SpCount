@@ -327,15 +327,9 @@ class HomeFragment : Fragment(){
             var contents = view.findViewById<EditText>(R.id.Contents)
             var remarks = view.findViewById<EditText>(R.id.Remarks)
 
-            year.isEnabled = true
-            month.isEnabled = true
-            day.isEnabled = true
-
             var y = Data.ymd / 10000
             var m = (Data.ymd / 100) % 100
             var d = Data.ymd % 100
-
-            Log.v("setData", "ここまできたよ" + y.toString() + "," + m.toString() + "," + d.toString())
 
             // 取得データセット
             itemID.setText(Data.id.toString())
@@ -349,6 +343,8 @@ class HomeFragment : Fragment(){
             name.setText(Data.name)
             remarks.setText(Data.remarks)
             contents.setText(Data.contents)
+
+            setCounter(view, Data.name, Data.contents, y, m)
         }
     }
 

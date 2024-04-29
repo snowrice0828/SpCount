@@ -27,8 +27,6 @@ class CalendarFragment : Fragment() {
         // Inflate the layout for this fragment
 
         val calendar = Calendar.getInstance()
-        calendar.set(2024, 1, 7)        // テストとしてデータの入っている日付を初期値としてセット
-
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH) + 1 // 月は0から始まるため、1を加算して正しい月を取得します
         val day = calendar.get(Calendar.DAY_OF_MONTH)
