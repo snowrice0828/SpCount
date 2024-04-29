@@ -275,9 +275,9 @@ class FileFragment : Fragment(){
             val rec = getList[i]
             retString += rec.id.toString() + ","
             retString += rec.ymd.toString() + ","
-            retString += rec.name + ","
-            retString += rec.contents + ","
-            retString += rec.remarks
+            retString += rec.name.replace(",","") + ","
+            retString += rec.contents.replace(",","") + ","
+            retString += rec.remarks.replace("\n", " ").replace(",","")
             retString += "\r\n"
         }
 
@@ -291,8 +291,8 @@ class FileFragment : Fragment(){
         {
             val rec = getList[i]
             retString += rec.year.toString() + ","
-            retString += rec.name + ","
-            retString += rec.contents + ","
+            retString += rec.name.replace(",","") + ","
+            retString += rec.contents.replace(",","") + ","
             retString += rec.jan.toString() + ","
             retString += rec.feb.toString() + ","
             retString += rec.mar.toString() + ","
