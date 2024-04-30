@@ -53,15 +53,15 @@ class HomeFragment : Fragment(){
         val buttonView = view.findViewById<Button>(R.id.button) as Button
         val itemIdView = view.findViewById<TextView>(R.id.ItemId) as TextView
 
+        itemIdView.text = ItemId.toString()
+
         if(ItemId != -1)
         {
-            itemIdView.text = ItemId.toString()
             itemIdView.visibility = View.VISIBLE    // 可視化
             buttonView.text = "更新"
         }
         else
         {
-            itemIdView.text = ""
             itemIdView.visibility = View.GONE    // 不可視化
             buttonView.text = "保存"
         }
@@ -264,6 +264,7 @@ class HomeFragment : Fragment(){
                 .show()
         }catch (e:NumberFormatException) {
             Toast.makeText(requireActivity(), "数値を入力してください。", Toast.LENGTH_LONG).show()
+            Log.v("buttonOnClick_Save", e.toString())
         }
     }
 
