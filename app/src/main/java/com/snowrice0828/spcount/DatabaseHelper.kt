@@ -142,7 +142,6 @@ class DatabaseHelper internal constructor(context: Context?) :
         return retString
     }
 
-
     internal fun selectCountData(name: String, contents: String, year: Int, month:Int): IntArray {
         val db = this.readableDatabase
         var retList: IntArray = intArrayOf(0,0)
@@ -188,6 +187,33 @@ class DatabaseHelper internal constructor(context: Context?) :
 
         return retList
     }
+
+
+    // 年間カウント取得
+    internal fun selectCountData(year: Int): Int {
+        val db = this.readableDatabase
+        var ret: Int = 0
+        var sql = " select count(*)" +
+                " from SpCount " +
+                " WHERE ymd / 10000 = " + year.toString()
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                if (cursor.count > 0) {
+                    cursor.moveToFirst()
+                    // 最初の行のみ取得
+                    ret = cursor.getInt(0)
+                }
+            }
+            cursor.close()
+        } catch(exception: Exception) {
+            Log.e("selectCountDataInt", exception.toString())
+        }
+        db.close()
+
+        return ret
+    }
+
 
     // カレンダー表示用 日付単位でデータ取得
     internal fun selectDataYmd(ymd: Int): Array<MainActivity.Record>

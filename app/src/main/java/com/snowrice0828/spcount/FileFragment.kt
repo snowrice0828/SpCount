@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class FileFragment : Fragment(){
@@ -58,6 +59,7 @@ class FileFragment : Fragment(){
             override fun afterTextChanged(s: Editable) {
                 var y = if(s.toString() == "") 0 else s.toString().toInt()
                 pYear = y
+                setCounter(view, y)
             }
         })
 
@@ -80,6 +82,8 @@ class FileFragment : Fragment(){
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         y.setText(currentYear.toString())
         pYear = currentYear
+
+        setCounter(view, currentYear)
     }
 
     private fun csvInsert(csvRow: List<String>): Boolean
@@ -309,5 +313,13 @@ class FileFragment : Fragment(){
         }
 
         return retString
+    }
+
+    fun setCounter(view: View, year: Int)
+    {
+        var ret = helper.selectCountData(year)  // 本データを取得
+
+        var yc = view.findViewById<TextView>(R.id.yaerCount)
+        yc.setText(ret.toString())
     }
 }

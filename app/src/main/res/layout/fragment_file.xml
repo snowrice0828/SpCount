@@ -54,4 +54,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/exportbutton" />
 
+    <TextView
+        android:id="@+id/yaerCount"
+        android:layout_width="120dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Year" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
