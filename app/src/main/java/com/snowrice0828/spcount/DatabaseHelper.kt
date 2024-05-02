@@ -446,4 +446,22 @@ class DatabaseHelper internal constructor(context: Context?) :
         return updateData(rec.id, rec.ymd, rec.contents, rec.name, rec.remarks)
     }
 
+    // データ削除
+    internal fun deleteData(whereId: Int): Boolean
+    {
+        try {
+            val database = this.writableDatabase
+            val whereClauses = "_id = ?"
+            val whereArgs = arrayOf(whereId.toString())
+            database.delete("SpCount", whereClauses, whereArgs)
+            database.close()
+        }catch(exception: Exception) {
+            Log.e("updateData", exception.toString())
+            return false
+        }
+
+        return true
+    }
+
+
 }

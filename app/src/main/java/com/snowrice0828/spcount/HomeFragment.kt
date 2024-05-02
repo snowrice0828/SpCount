@@ -50,20 +50,23 @@ class HomeFragment : Fragment(){
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         helper = DatabaseHelper(view.context)
 
-        val buttonView = view.findViewById<Button>(R.id.button) as Button
+        val savebuttonView = view.findViewById<Button>(R.id.saveButton) as Button
+        val deletebuttonView = view.findViewById<Button>(R.id.deleteButton) as Button
         val itemIdView = view.findViewById<TextView>(R.id.ItemId) as TextView
 
         itemIdView.text = ItemId.toString()
 
         if(ItemId != -1)
         {
-            itemIdView.visibility = View.VISIBLE    // 可視化
-            buttonView.text = "更新"
+            itemIdView.visibility = View.VISIBLE        // 可視化
+            deletebuttonView.visibility = View.VISIBLE  // 可視化
+            savebuttonView.text = "更新"
         }
         else
         {
             itemIdView.visibility = View.GONE    // 不可視化
-            buttonView.text = "保存"
+            deletebuttonView.visibility = View.GONE  // 不可視化
+            savebuttonView.text = "保存"
         }
 
         return view
@@ -175,8 +178,12 @@ class HomeFragment : Fragment(){
             }
         })
 
-        view.findViewById<Button>(R.id.button).setOnClickListener {
+        view.findViewById<Button>(R.id.saveButton).setOnClickListener {
             buttonOnClick_Save(view)
+        }
+
+        view.findViewById<Button>(R.id.deleteButton).setOnClickListener {
+            buttonOnClick_Delete(view)
         }
     }
 
@@ -268,6 +275,44 @@ class HomeFragment : Fragment(){
         }
     }
 
+    fun buttonOnClick_Delete(view: View){ // ①クリック時の処理を追加
+        try {
+            var itemId = view.findViewById<TextView>(R.id.ItemId)
+            var id = itemId.text.toString().toInt()
+
+            var msg: String = "ID:" + id.toString() + "を削除します。\n本当によろしいですか？"
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("確認")
+                .setMessage(msg)
+                .setPositiveButton(
+                    "OK"
+                ) { dialog, which ->
+                    // レコード削除
+                    var ret :Boolean = submit_del(id)
+                    if (ret) {
+                        Toast.makeText(requireActivity(), "削除が完了しました。", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireActivity(), "エラーが発生しました。", Toast.LENGTH_LONG).show()
+                    }
+                    fragmentManager?.popBackStack()     // フラグメントを戻る
+                    val transaction = requireFragmentManager().beginTransaction()
+                    transaction.replace(R.id.container, HomeFragment()) // OriginalFragment は戻りたい元のフラグメントのクラス名です
+                    transaction.commit()
+                }
+                .setNegativeButton(
+                    "キャンセル"
+                ) { dialog, which ->
+                    // 何もしない
+
+                }
+                .show()
+        }catch (e:NumberFormatException) {
+            Toast.makeText(requireActivity(), "数値を入力してください。", Toast.LENGTH_LONG).show()
+            Log.v("buttonOnClick_Save", e.toString())
+        }
+    }
+
     // データインサート処理
     private fun submit_inc(contents :String, name :String, ymd: Int, remarks: String): Boolean
     {
@@ -278,6 +323,12 @@ class HomeFragment : Fragment(){
     private fun submit_upd(id :Int, contents :String, name :String, ymd: Int, remarks: String): Boolean
     {
         return helper.updateData(id, ymd, contents, name, remarks)
+    }
+
+    // データアップデート処理
+    private fun submit_del(id :Int): Boolean
+    {
+        return helper.deleteData(id)
     }
 
     // 画面カウンタセット処理
@@ -335,15 +386,19 @@ class HomeFragment : Fragment(){
             // 取得データセット
             itemID.setText(Data.id.toString())
             year.setText(y.toString())
-            year.requestFocus()
             month.setText(m.toString())
-            month.requestFocus()
             day.setText(d.toString())
-            day.requestFocus()
             day.setSelection(day.text.length)
             name.setText(Data.name)
             remarks.setText(Data.remarks)
             contents.setText(Data.contents)
+
+            ItemId = Data.id
+            pYear = y
+            pMonth = m
+            pDay = d
+            pName = Data.name
+            pContents = Data.contents
 
             setCounter(view, Data.name, Data.contents, y, m)
         }

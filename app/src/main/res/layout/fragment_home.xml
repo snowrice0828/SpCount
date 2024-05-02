@@ -109,14 +109,28 @@
         app:layout_constraintTop_toTopOf="@id/textView1" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:layout_marginEnd="50dp"
         android:text="保存"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/Remarks" />
+        app:layout_constraintTop_toTopOf="@id/Remarks"
+        />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="120dp"
+        android:text="削除"
+        android:textColorLink="@color/calendar_white_light"
+        app:backgroundTint="@color/buttun_tomato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/Remarks"
+        />
 
     <EditText
         android:id="@+id/Year"
