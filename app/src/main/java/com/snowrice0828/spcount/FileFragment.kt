@@ -321,5 +321,20 @@ class FileFragment : Fragment(){
 
         var yc = view.findViewById<TextView>(R.id.yaerCount)
         yc.setText(ret.toString())
+
+        // 曜日別集計を表示
+        var ret2 = helper.selectDataAllYear(year)
+
+        var text : String = ""
+        text = "日：" + ret2[0].toString() + "\n" +
+                "月：" + ret2[1].toString() + "\n" +
+                "火：" + ret2[2].toString() + "\n" +
+                "水：" + ret2[3].toString() + "\n" +
+                "木：" + ret2[4].toString() + "\n" +
+                "金：" + ret2[5].toString() + "\n" +
+                "土：" + ret2[6].toString()
+
+        var dowc = view.findViewById<TextView>(R.id.daysOfWeekCount)
+        dowc.setText(text)
     }
 }

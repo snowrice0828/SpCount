@@ -5,6 +5,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.time.OffsetDateTime
+import java.util.Calendar
+import java.util.Locale
 
 class DatabaseHelper internal constructor(context: Context?) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -214,7 +219,6 @@ class DatabaseHelper internal constructor(context: Context?) :
         return ret
     }
 
-
     // カレンダー表示用 日付単位でデータ取得
     internal fun selectDataYmd(ymd: Int): Array<MainActivity.Record>
     {
@@ -251,7 +255,7 @@ class DatabaseHelper internal constructor(context: Context?) :
         return setList.toTypedArray()
     }
 
-    // カレンダー表示用 日付単位でデータ取得
+    // カレンダー表示用 IDでデータ取得
     internal fun selectDataId(Id: Int): MainActivity.Record {
         var retRecord = MainActivity.Record()
         val db = this.readableDatabase
@@ -288,6 +292,52 @@ class DatabaseHelper internal constructor(context: Context?) :
             Log.e("selectDataId", exception.toString())
         }
         return retRecord
+    }
+
+    // 全データ取得
+    internal fun selectDataAllYear(year:Int): Array<Int>
+    {
+        val db = this.readableDatabase
+        var setList = intArrayOf(0,0,0,0,0,0,0)        // 日,月,火,水,木,金,土
+        val sql = " select * " +
+                " from SpCount " +
+                " where ymd / 10000 = " + year.toString() +
+                " order by _id "
+        try {
+            val cursor = db.rawQuery(sql, null)
+            cursor.use {
+                // ループによるデータ取得
+                // Cursor.moveToNext(): 次の行に移動
+                // -> 次の行が存在する場合はtrue, 存在しない場合はfalseを返す
+                // <- 最初はテーブルの0行目に位置しているため、
+                //    while構文を用いて最初に1行目に移る処理を行う
+                while (cursor.moveToNext()) {
+
+                    val dateString = cursor.getInt(1).toString()
+                    // SimpleDateFormatを使って日付形式に変換
+                    val dateFormat: DateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+                    dateFormat.isLenient = false
+                    val date = dateFormat.parse(dateString)
+                    val calender: Calendar = Calendar.getInstance()
+                    calender.time = date
+
+                    val dow = calender.get(Calendar.DAY_OF_WEEK)    // 曜日の取得
+                    when (dow) {
+                        Calendar.SUNDAY -> setList[0] += 1
+                        Calendar.MONDAY -> setList[1] += 1
+                        Calendar.TUESDAY -> setList[2] += 1
+                        Calendar.WEDNESDAY -> setList[3] += 1
+                        Calendar.THURSDAY -> setList[4] += 1
+                        Calendar.FRIDAY -> setList[5] += 1
+                        Calendar.SATURDAY -> setList[6] += 1
+                    }
+                }
+            }
+            cursor.close()
+        } catch(exception: Exception) {
+            Log.e("selectDataDayofweek", exception.toString())
+        }
+        return setList.toTypedArray()
     }
 
     // 全データ取得

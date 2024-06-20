@@ -65,4 +65,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Year" />
 
+    <TextView
+        android:id="@+id/daysOfWeekCount"
+        android:layout_width="120dp"
+        android:layout_height="240dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:autoText="false"
+        android:gravity="top|left"
+        android:lineSpacingExtra="12sp"
+        android:text="TextView"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/yaerCount" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

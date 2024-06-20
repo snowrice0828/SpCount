@@ -67,7 +67,7 @@ class CalendarFragment : Fragment() {
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        val dividerItemDecoration = DividerItemDecoration(requireActivity() , LinearLayoutManager(requireActivity()).getOrientation())
+        val dividerItemDecoration = DividerItemDecoration(requireActivity() , DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(dividerItemDecoration)
     }
 
