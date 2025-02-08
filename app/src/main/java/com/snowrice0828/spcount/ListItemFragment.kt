@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CalendarView
+import androidx.appcompat.view.menu.MenuView.ItemView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,6 +30,11 @@ class ListItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        val listItem = inflater.inflate(R.layout.list_item, container, false)
+        if(listItem != null) {
+            listItem.layoutParams.height = 200
+        }
+
         return inflater.inflate(R.layout.list_item, container, false)
     }
 

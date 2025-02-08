@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
+import android.widget.EditText
+import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -46,13 +48,13 @@ class CalendarFragment : Fragment() {
         calendarView.date = calendar.timeInMillis
         calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
             SelectDate = year * 10000 + (month + 1) * 100 + dayOfMonth
-            setRecylerView()
+            setRecylerView(view)
         }
         // 初期日付でのデータ取得表示
-        setRecylerView()
+        setRecylerView(view)
     }
 
-    fun setRecylerView()
+    fun setRecylerView(view: View)
     {
         var getList = helper.selectDataYmd(SelectDate)
         val adapter: RecyclerAdapter = RecyclerAdapter(getList)
@@ -82,10 +84,12 @@ class CalendarFragment : Fragment() {
         // Fragmentに値をセットする
         val fragment = HomeFragment()
         fragment.setArguments(bundle)
+
         // 遷移処理
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
             .setReorderingAllowed(true)
+            .addToBackStack("")
             .commit()
     }
 

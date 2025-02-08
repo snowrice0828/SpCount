@@ -262,13 +262,17 @@ class HomeFragment : Fragment(){
                         Toast.makeText(requireActivity(), "エラーが発生しました。", Toast.LENGTH_LONG).show()
                     }
                     setCounter(view, name, contents, year, month)             // データを取得、集計して表示
+
+                    if(id != -1) {
+                        // カレンダービューに戻る 元の日付選択を保持させるのは保留
+                        parentFragmentManager.popBackStack()
+                    }
                 }
                 .setNegativeButton(
                     "キャンセル"
                 ) { dialog, which ->
                     // 何もしない
-                }
-                .show()
+                }.show()
         }catch (e:NumberFormatException) {
             Toast.makeText(requireActivity(), "数値を入力してください。", Toast.LENGTH_LONG).show()
             Log.v("buttonOnClick_Save", e.toString())

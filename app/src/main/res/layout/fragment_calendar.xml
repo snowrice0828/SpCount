@@ -15,7 +15,7 @@
         <CalendarView
             android:id="@+id/Calendar"
             android:layout_width="412dp"
-            android:layout_height="398dp"
+            android:layout_height="320dp"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="MissingConstraints" />
 
@@ -23,6 +23,8 @@
             android:id="@+id/dataListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
             app:layout_constraintEnd_toEndOf="@+id/Calendar" />
 
     </LinearLayout>

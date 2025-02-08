@@ -11,7 +11,7 @@ class RecyclerAdapter(val list: Array<MainActivity.Record>) : RecyclerView.Adapt
     lateinit var listener: OnItemClickListener
 
     override fun onCreateViewHolder(parent: ViewGroup , viewType: Int): ViewHolderList {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
+        var itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
         return ViewHolderList(itemView)
     }
 
